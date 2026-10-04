@@ -95,14 +95,11 @@ dt_value dt_value_ref(dt_ref *p)
  */
 dt_status dt_value_as_int(dt_value v, long long *out)
 {
-    /* TODO: Check v.tag for DT_INT. Write v.as.integer to *out after a match.
-       Otherwise, return DT_ERR_TAG and preserve *out.
-       dt_value_as_int(dt_value_int(42), &out)  -> DT_OK, out = 42
-       dt_value_as_int(dt_value_str(s), &out)   -> DT_ERR_TAG, out untouched
-       cases/normal/union_readers.case, cases/tag/as_int_on_string.case */
-    (void)v;
-    (void)out;
-    return DT_ERR_TAG;
+    if (v.tag != DT_INT) {
+        return DT_ERR_TAG;
+    }
+    *out = v.as.integer;
+    return DT_OK;
 }
 
 /*
