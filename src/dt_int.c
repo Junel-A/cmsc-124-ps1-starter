@@ -45,16 +45,14 @@ dt_status dt_int_add(long long a, long long b, long long *out)
  */
 dt_status dt_int_sub(long long a, long long b, long long *out)
 {
-    /* TODO: Check subtraction directly.
-       The value -LLONG_MIN does not exist in long long.
-       Therefore, dt_int_add(a, -b, out) fails when b is LLONG_MIN.
-       dt_int_sub(10, 4, &out)                 -> DT_OK, out = 6
-       dt_int_sub(LLONG_MIN + 1, 2, &out)      -> DT_ERR_OVERFLOW, out untouched
-       cases/normal/int_arithmetic.case, cases/boundary/int_overflow_sub_min.case */
-    (void)a;
-    (void)b;
-    (void)out;
-    return DT_ERR_OVERFLOW;
+    if (b < 0 && a > LLONG_MAX + b) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (b > 0 && a < LLONG_MIN + b) {
+        return DT_ERR_OVERFLOW;
+    }
+    *out = a - b;
+    return DT_OK;
 }
 
 /*
