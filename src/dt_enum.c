@@ -47,12 +47,14 @@ dt_status dt_enum_name(int ordinal, const char **out)
  */
 dt_status dt_enum_from_name(const char *name, int *out)
 {
-    /* TODO: Search COLOR_NAMES. Return DT_ERR_RANGE when no text matches.
-       dt_enum_from_name("GREEN", &out)   -> DT_OK, out = 1
-       dt_enum_from_name("PURPLE", &out)  -> DT_ERR_RANGE, out untouched
-       dt_enum_from_name("1", &out)       -> DT_ERR_RANGE because no text matches
-       cases/normal/enum_names.case */
-    (void)name;
-    (void)out;
+    if (!name || !out) {
+        return DT_ERR_RANGE;
+    }
+    for (int i = 0; i < DT_COLOR_COUNT; i++) {
+        if (strcmp(COLOR_NAMES[i], name) == 0) {
+            *out = i;
+            return DT_OK;
+        }
+    }
     return DT_ERR_RANGE;
 }
