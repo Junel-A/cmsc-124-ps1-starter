@@ -21,14 +21,11 @@ static const char *const COLOR_NAMES[] = { "RED", "GREEN", "BLUE" };
  */
 bool dt_enum_is_valid(int ordinal)
 {
-    /* TODO: Return true for an ordinal from zero through DT_COLOR_COUNT - 1.
-       dt_enum_is_valid(0)   -> true, RED
-       dt_enum_is_valid(2)   -> true, BLUE
-       dt_enum_is_valid(3)   -> false, one past the set
-       dt_enum_is_valid(-1)  -> false, below the lower bound */
-    (void)ordinal;
-    (void)COLOR_NAMES; /* Delete this line after you use COLOR_NAMES. */
-    return false;
+    if (ordinal < 0 || ordinal >= DT_COLOR_COUNT) {
+        return false;
+    }
+    (void)COLOR_NAMES;
+    return true;
 }
 
 /*
