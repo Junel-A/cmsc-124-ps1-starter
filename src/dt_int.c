@@ -61,15 +61,28 @@ dt_status dt_int_sub(long long a, long long b, long long *out)
  */
 dt_status dt_int_mul(long long a, long long b, long long *out)
 {
-    /* TODO: Handle zero first. Then handle LLONG_MIN with -1.
-       Finally, handle the remaining values.
-       dt_int_mul(6, 7, &out)            -> DT_OK, out = 42
-       dt_int_mul(LLONG_MIN, 0, &out)    -> DT_OK, out = 0
-       dt_int_mul(LLONG_MIN, -1, &out)   -> DT_ERR_OVERFLOW, out untouched
-       cases/normal/int_arithmetic.case,
-       cases/boundary/int_mul_min_by_negative_one.case */
-    (void)a;
-    (void)b;
-    (void)out;
-    return DT_ERR_OVERFLOW;
+    if (a == 0 || b == 0) {
+        *out = 0;
+        return DT_OK;
+    }
+    if (a == LLONG_MIN && b == -1) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (b == LLONG_MIN && a == -1) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (a > 0 && b > 0 && a > LLONG_MAX / b) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (a > 0 && b < 0 && b < LLONG_MIN / a) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (a < 0 && b > 0 && a < LLONG_MIN / b) {
+        return DT_ERR_OVERFLOW;
+    }
+    if (a < 0 && b < 0 && a < LLONG_MAX / b) {
+        return DT_ERR_OVERFLOW;
+    }
+    *out = a * b;
+    return DT_OK;
 }
