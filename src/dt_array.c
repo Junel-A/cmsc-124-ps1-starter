@@ -139,14 +139,23 @@ dt_status dt_array_get(const dt_array *a, long long index, dt_value *out)
  */
 dt_status dt_array_set(dt_array *a, long long index, dt_value v)
 {
-    /* TODO: Use the same bounds check as dt_array_get. Then write the value.
-       Put the shared check in one helper.
-       an array over -1..1:
-         dt_array_set(a, -1, dt_value_int(10))  -> DT_OK, offset 0 holds 10
-         dt_array_set(a,  2, dt_value_int(10))  -> DT_ERR_RANGE, nothing changes
-       cases/normal/array_basics.case, cases/boundary/array_negative_lower_bound.case */
-    (void)a;
-    (void)index;
-    (void)v;
-    return DT_ERR_RANGE;
+    if (!a) {
+        return DT_ERR_RANGE;
+    }
+    if (index < a->lower_bound) {
+        return DT_ERR_RANGE;
+    }
+
+    long long diff;
+    if (a->lower_bound < 0 && index > LLONG_MAX + a->lower_bound) {
+        return DT_ERR_RANGE;
+    }
+    diff = index - a->lower_bound;
+
+    if ((size_t)diff >= a->length) {
+        return DT_ERR_RANGE;
+    }
+
+    a->elements[(size_t)diff] = v;
+    return DT_OK;
 }
