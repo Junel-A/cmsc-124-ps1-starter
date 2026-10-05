@@ -81,13 +81,10 @@ size_t dt_str_len(const dt_str *s)
  */
 const char *dt_str_bytes(const dt_str *s)
 {
-    /* TODO: Return the buffer. The caller uses it with dt_str_len.
-       after `str new s "a\0b"`:
-         dt_str_bytes(s) -> the three bytes 'a', 0, 'b'
-         dt_str_len(s)   -> 3, the required read length
-       cases/capacity/embedded_zero_byte.case */
-    (void)s;
-    return "";
+    if (!s) {
+        return "";
+    }
+    return s->bytes;
 }
 
 /*
