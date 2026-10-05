@@ -97,14 +97,10 @@ size_t dt_array_len(const dt_array *a)
  */
 long long dt_array_lower_bound(const dt_array *a)
 {
-    /* TODO: Return the lower bound that the constructor stored.
-       dt_array_get uses this value to calculate an element offset.
-       after `arr new a 3 -1`:  dt_array_lower_bound(a) -> -1
-       after `arr new a 3 1`:   dt_array_lower_bound(a) -> 1
-       cases/boundary/array_negative_lower_bound.case,
-       cases/boundary/array_lower_bound_one.case */
-    (void)a;
-    return 0;
+    if (!a) {
+        return 0;
+    }
+    return a->lower_bound;
 }
 
 /*
