@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DT_MAP_BUCKETS 16
+
 struct dt_map {
     /* Each node stores a dynamically allocated key, a value, and a next pointer */
     struct dt_map_node {
