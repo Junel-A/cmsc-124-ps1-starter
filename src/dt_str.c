@@ -31,15 +31,25 @@ struct dt_str {
  */
 dt_str *dt_str_new(const char *bytes, size_t length)
 {
-    /* TODO: Reject SIZE_MAX because the buffer needs one terminator byte.
-       Allocate the handle and buffer. Copy `length` bytes with memcpy.
-       Store the length. Return NULL if an allocation fails.
-       dt_str_new("hello", 5)  -> a string whose dt_str_len is 5
-       dt_str_new("a\0b", 3)   -> a string whose dt_str_len remains 3
-       cases/normal/string_building.case, cases/capacity/embedded_zero_byte.case */
-    (void)bytes;
-    (void)length;
-    return NULL;
+   if (length == SIZE_MAX) {
+        return NULL;
+    }
+    dt_str *s = malloc(sizeof(dt_str));
+    if (!s) {
+        return NULL;
+    }
+    s->capacity = length + 1;
+    s->bytes = malloc(s->capacity);
+    if (!s->bytes) {
+        free(s);
+        return NULL;
+    }
+    if (length > 0 && bytes != NULL) {
+        memcpy(s->bytes, bytes, length);
+    }
+    s->bytes[length] = '\0';
+    s->length = length;
+    return s;
 }
 
 /*
