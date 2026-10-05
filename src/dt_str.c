@@ -145,20 +145,23 @@ dt_status dt_str_append(dt_str *s, const char *bytes, size_t length)
  */
 dt_status dt_str_substr(const dt_str *s, size_t start, size_t length, dt_str **out)
 {
-    /* TODO: Return DT_ERR_RANGE when the requested range exceeds the source.
-       Two size_t values can wrap. First compare start with the source length.
-       Then compare length with the remaining length.
-       s holds "hello" (length 5):
-         dt_str_substr(s, 3, 2, &out)  -> DT_OK, *out is "lo"
-         dt_str_substr(s, 5, 0, &out)  -> DT_OK, *out is a valid empty string
-         dt_str_substr(s, 3, 5, &out)  -> DT_ERR_RANGE, *out untouched
-       an allocation failure           -> DT_ERR_CAPACITY, *out untouched
-       cases/boundary/substr_exact_end.case, cases/boundary/substr_past_end.case */
-    (void)s;
-    (void)start;
-    (void)length;
-    (void)out;
-    return DT_ERR_RANGE;
+    if (!s || !out) {
+        return DT_ERR_RANGE;
+    }
+    if (start > s->length) {
+        return DT_ERR_RANGE;
+    }
+    if (length > s->length - start) {
+        return DT_ERR_RANGE;
+    }
+
+    dt_str *sub = dt_str_new(s->bytes + start, length);
+    if (!sub) {
+        return DT_ERR_CAPACITY;
+    }
+
+    *out = sub;
+    return DT_OK;
 }
 
 /*
