@@ -69,12 +69,10 @@ void dt_str_free(dt_str *s)
  */
 size_t dt_str_len(const dt_str *s)
 {
-    /* TODO: Return the stored length. Do not scan the bytes.
-       after `str new greeting "hello"` then `str append greeting ", world"`:
-         dt_str_len(greeting) -> 12
-       cases/normal/string_building.case */
-    (void)s;
-    return 0;
+    if (!s) {
+        return 0;
+    }
+    return s->length;
 }
 
 /*
