@@ -33,19 +33,38 @@ struct dt_array {
  */
 dt_array *dt_array_new(size_t length, long long lower_bound)
 {
-    /* TODO: Allocate the descriptor and length elements.
-       Set each element to dt_value_nil(). Store the lower bound.
-       Return a valid array for a zero length.
-       Reject a nonempty range with an unrepresentable final index.
-       Reject an element block size that exceeds SIZE_MAX.
-       dt_array_new(3, 0)   -> three nil elements, indices 0, 1, 2
-       dt_array_new(3, -1)  -> three nil elements, indices -1, 0, 1
-       dt_array_new(0, 0)   -> an empty array
-       cases/normal/array_basics.case, cases/boundary/array_empty.case,
-       cases/boundary/array_negative_lower_bound.case */
-    (void)length;
-    (void)lower_bound;
-    return NULL;
+    // Check for multiplication overflow when allocating element block
+    if (length > 0 && length > SIZE_MAX / sizeof(dt_value)) {
+        return NULL;
+    }
+
+    // Check if the final index (lower_bound + length - 1) overflows long long
+    if (length > 0) {
+        long long len_minus_1 = (long long)(length - 1);
+        if (lower_bound > LLONG_MAX - len_minus_1) {
+            return NULL;
+        }
+    }
+
+    dt_array *a = malloc(sizeof(dt_array));
+    if (!a) {
+        return NULL;
+    }
+
+    a->lower_bound = lower_bound;
+    a->length = length;
+    a->elements = length > 0 ? malloc(length * sizeof(dt_value)) : NULL;
+
+    if (length > 0 && !a->elements) {
+        free(a);
+        return NULL;
+    }
+
+    for (size_t i = 0; i < length; i++) {
+        a->elements[i] = dt_value_nil();
+    }
+
+    return a;
 }
 
 /*
