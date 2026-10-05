@@ -170,13 +170,17 @@ dt_status dt_str_substr(const dt_str *s, size_t start, size_t length, dt_str **o
  */
 bool dt_str_eq(const dt_str *a, const dt_str *b)
 {
-    /* TODO: Compare the lengths first. Then use memcmp.
-       strcmp ends at an embedded zero byte and can report unequal data as equal.
-       "world" and "world"  -> true
-       "hello" and "world"  -> false
-       "a\0b" and "a"       -> false because their lengths are 3 and 1
-       cases/normal/string_building.case, cases/capacity/embedded_zero_byte.case */
-    (void)a;
-    (void)b;
-    return false;
+    if (a == b) {
+        return true;
+    }
+    if (!a || !b) {
+        return false;
+    }
+    if (a->length != b->length) {
+        return false;
+    }
+    if (a->length == 0) {
+        return true;
+    }
+    return memcmp(a->bytes, b->bytes, a->length) == 0;
 }
