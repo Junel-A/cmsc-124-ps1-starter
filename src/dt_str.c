@@ -94,17 +94,47 @@ const char *dt_str_bytes(const dt_str *s)
  */
 dt_status dt_str_append(dt_str *s, const char *bytes, size_t length)
 {
-    /* TODO: Check that the new length and terminator fit in size_t.
-       Grow the buffer before you copy the bytes.
-       Prevent unsigned wrap during capacity growth.
-       Geometric growth makes repeated append operations efficient.
-       s holds "hello": dt_str_append(s, ", world", 7) -> DT_OK, len is now 12
-       an allocation failure                           -> DT_ERR_CAPACITY, s unchanged
-       cases/normal/string_building.case, cases/capacity/string_growth.case */
-    (void)s;
-    (void)bytes;
-    (void)length;
-    return DT_ERR_CAPACITY;
+   if (!s) {
+        return DT_ERR_CAPACITY;
+    }
+    if (length == 0) {
+        return DT_OK;
+    }
+    if (length > SIZE_MAX - s->length) {
+        return DT_ERR_CAPACITY;
+    }
+    size_t new_len = s->length + length;
+    if (new_len > SIZE_MAX - 1) {
+        return DT_ERR_CAPACITY;
+    }
+    size_t req_cap = new_len + 1;
+
+    if (req_cap > s->capacity) {
+        size_t new_cap = s->capacity;
+        while (new_cap < req_cap) {
+            if (new_cap > SIZE_MAX / 2) {
+                new_cap = req_cap;
+                if (new_cap < req_cap) {
+                    return DT_ERR_CAPACITY;
+                }
+                break;
+            }
+            new_cap *= 2;
+        }
+        char *new_bytes = realloc(s->bytes, new_cap);
+        if (!new_bytes) {
+            return DT_ERR_CAPACITY;
+        }
+        s->bytes = new_bytes;
+        s->capacity = new_cap;
+    }
+
+    if (bytes != NULL) {
+        memcpy(s->bytes + s->length, bytes, length);
+    }
+    s->length = new_len;
+    s->bytes[s->length] = '\0';
+    return DT_OK;
 }
 
 /*
