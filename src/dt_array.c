@@ -109,22 +109,27 @@ long long dt_array_lower_bound(const dt_array *a)
  */
 dt_status dt_array_get(const dt_array *a, long long index, dt_value *out)
 {
-    /* TODO: Reject an index below the lower bound.
-       Calculate the nonnegative distance without signed overflow.
-       Reject a distance that is at least the length.
-       Convert the checked distance to size_t for the element offset.
-       an array over -1..1:
-         dt_array_get(a, -1, &out)  -> DT_OK, offset 0
-         dt_array_get(a,  1, &out)  -> DT_OK, offset 2
-         dt_array_get(a,  2, &out)  -> DT_ERR_RANGE, *out untouched
-         dt_array_get(a, -2, &out)  -> DT_ERR_RANGE, below the lower bound
-       cases/boundary/array_index_above_upper.case,
-       cases/boundary/array_index_below_lower.case,
-       cases/boundary/array_full_range_index.case */
-    (void)a;
-    (void)index;
-    (void)out;
-    return DT_ERR_RANGE;
+    if (!a || !out) {
+        return DT_ERR_RANGE;
+    }
+    if (index < a->lower_bound) {
+        return DT_ERR_RANGE;
+    }
+
+    // Calculate nonnegative distance: index - lower_bound, avoiding signed overflow
+    long long diff;
+    if (a->lower_bound < 0 && index > LLONG_MAX + a->lower_bound) {
+        return DT_ERR_RANGE; // Potential overflow if lower_bound is very negative
+    }
+    // Safe standard subtraction since underflow is guarded by index < a->lower_bound
+    diff = index - a->lower_bound;
+
+    if ((size_t)diff >= a->length) {
+        return DT_ERR_RANGE;
+    }
+
+    *out = a->elements[(size_t)diff];
+    return DT_OK;
 }
 
 /*
