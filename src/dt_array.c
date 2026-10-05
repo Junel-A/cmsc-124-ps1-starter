@@ -73,11 +73,11 @@ dt_array *dt_array_new(size_t length, long long lower_bound)
  */
 void dt_array_free(dt_array *a)
 {
-    /* TODO: Release the elements. Then release the descriptor.
-       Preserve the referenced values. The driver environment owns them.
-       an array holding a string  -> the element block goes, the string stays
-       dt_array_free(NULL)        -> returns, having done nothing */
-    (void)a;
+    if (!a) {
+        return;
+    }
+    free(a->elements);
+    free(a);
 }
 
 /*
@@ -85,13 +85,10 @@ void dt_array_free(dt_array *a)
  */
 size_t dt_array_len(const dt_array *a)
 {
-    /* TODO: Return the stored length. The lower bound does not affect it.
-       after `arr new a 3 0`:   dt_array_len(a) -> 3
-       after `arr new a 3 -1`:  dt_array_len(a) -> 3, the same three elements
-       after `arr new a 0 0`:   dt_array_len(a) -> 0
-       cases/normal/array_basics.case, cases/boundary/array_empty.case */
-    (void)a;
-    return 0;
+    if (!a) {
+        return 0;
+    }
+    return a->length;
 }
 
 /*
