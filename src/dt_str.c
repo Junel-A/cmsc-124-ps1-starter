@@ -57,10 +57,11 @@ dt_str *dt_str_new(const char *bytes, size_t length)
  */
 void dt_str_free(dt_str *s)
 {
-    /* TODO: Release the buffer. Then release the handle. Accept NULL.
-       dt_str_free(s)     -> the buffer and the handle are both released
-       dt_str_free(NULL)  -> returns, having done nothing */
-    (void)s;
+   if (!s) {
+        return;
+    }
+    free(s->bytes);
+    free(s);
 }
 
 /*
