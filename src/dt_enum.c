@@ -34,16 +34,11 @@ bool dt_enum_is_valid(int ordinal)
  */
 dt_status dt_enum_name(int ordinal, const char **out)
 {
-    /* TODO: Return DT_ERR_RANGE when the ordinal is outside the set.
-       Otherwise, write the corresponding text to *out.
-       Validate the ordinal before you index COLOR_NAMES.
-       dt_enum_name(0, &out)  -> DT_OK, *out = "RED"
-       dt_enum_name(2, &out)  -> DT_OK, *out = "BLUE"
-       dt_enum_name(3, &out)  -> DT_ERR_RANGE, *out untouched
-       cases/normal/enum_names.case */
-    (void)ordinal;
-    (void)out;
-    return DT_ERR_RANGE;
+    if (!dt_enum_is_valid(ordinal) || !out) {
+        return DT_ERR_RANGE;
+    }
+    *out = COLOR_NAMES[ordinal];
+    return DT_OK;
 }
 
 /*
