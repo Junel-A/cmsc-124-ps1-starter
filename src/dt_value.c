@@ -95,9 +95,11 @@ dt_value dt_value_ref(dt_ref *p)
  */
 dt_status dt_value_as_int(dt_value v, long long *out)
 {
+    // Look at the tag first if it is an int
     if (v.tag != DT_INT) {
-        return DT_ERR_TAG;
+        return DT_ERR_TAG;      // reject to [revent unsafe raw union interpretation (type spoofing)]
     }
+    // If it is an integer, write the integer to *out
     *out = v.as.integer;
     return DT_OK;
 }
@@ -107,9 +109,11 @@ dt_status dt_value_as_int(dt_value v, long long *out)
  */
 dt_status dt_value_as_enum(dt_value v, int *out)
 {
+    // Validate that the runtime tag matches DT_ENUM before payload extraction
     if (v.tag != DT_ENUM) {
-        return DT_ERR_TAG;
+        return DT_ERR_TAG;  // Reject type mismatch
     }
+    // Extract the ordinal payload safely
     *out = v.as.ordinal;
     return DT_OK;
 }
@@ -119,9 +123,11 @@ dt_status dt_value_as_enum(dt_value v, int *out)
  */
 dt_status dt_value_as_str(dt_value v, dt_str **out)
 {
+    // Validate that the runtime tag matches DT_STR before pointer extraction
     if (v.tag != DT_STR) {
-        return DT_ERR_TAG;
+        return DT_ERR_TAG;  // Reject type mismatch to prevent undefined behavior from treating scalars as pointers
     }
+    // Extract the string pointer payload safely
     *out = v.as.string;
     return DT_OK;
 }
