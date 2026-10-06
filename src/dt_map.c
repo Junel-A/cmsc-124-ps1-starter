@@ -30,9 +30,9 @@ struct dt_map {
         struct dt_map_node *next;
     } *buckets[DT_MAP_BUCKETS];
 
-    struct dt_map_node **order; /* Dynamic array storing node pointers in order */
-    size_t count;               /* Number of active keys currently in the map */
-    size_t order_cap;           /* Allocated capacity of the order pointer array */
+    struct dt_map_node **order; // Dynamic array storing node pointers in order
+    size_t count;               // Number of active keys currently in the map
+    size_t order_cap;           // Allocated capacity of the order pointer array
 };
 
 /*
@@ -75,14 +75,14 @@ void dt_map_free(dt_map *m)
     
         if (m == NULL) return;
 
-    /* Iterating through m->order allows freeing every key copy and node w/o eeding to traverse all 64 bucket chains */
+    /* Iterating through m->order allows freeing every key copy and node w/o needing to traverse all 64 bucket chains */
     for (size_t i = 0; i < m->count; i++) {
-        free(m->order[i]->key); /* Free the copied key string */
-        free(m->order[i]);      /* Free the node memory itself */
+        free(m->order[i]->key); // Free the copied key string
+        free(m->order[i]);      // Free the node memory itself
     }
 
-    free(m->order); /* Free the dynamic insertion-order array */
-    free(m);        /* Free the map container structure */
+    free(m->order); // Free the dynamic insertion-order array
+    free(m);        // Free the map container structure
 }
 
 /*
@@ -98,7 +98,7 @@ size_t dt_map_len(const dt_map *m)
        cases/normal/map_basics.case */
 
    if (m == NULL) return 0;
-    return m->count; /* O(1) lookup of active key count */
+    return m->count;    //O(1) lookup of active key count
 }
 
 /*
@@ -120,15 +120,15 @@ dt_status dt_map_put(dt_map *m, const char *key, dt_value v)
 
     if (m == NULL || key == NULL) return DT_ERR_CAPACITY;
 
-    /* --- Step 1: 64-bit FNV-1a Hash Calculation --- */
+    /* 64-bit FNV-1a Hash Calculation  */
     unsigned long long h = 14695981039346656037ULL;
     for (const unsigned char *p = (const unsigned char *)key; *p != '\0'; p++) {
         h ^= (unsigned long long)*p;
         h *= 1099511628211ULL;
     }
-    size_t b = (size_t)(h % DT_MAP_BUCKETS); /* Map hash to a valid bucket index */
+    size_t b = (size_t)(h % DT_MAP_BUCKETS); // Map hash to a valid bucket index 
 
-    /* --- Step 2 & 3: Search the bucket chain for an existing key --- */
+    /* Search the bucket chain for an existing key  */
     struct dt_map_node *curr = m->buckets[b];
     while (curr != NULL) {
         if (strcmp(curr->key, key) == 0) {
@@ -139,7 +139,7 @@ dt_status dt_map_put(dt_map *m, const char *key, dt_value v)
         curr = curr->next;
     }
 
-    /* --- Step 4: Add New Entry --- */
+    /* Add New Entry */
 
     /* Grow the insertion order pointer array if full */
     if (m->count == m->order_cap) {
@@ -205,7 +205,7 @@ dt_status dt_map_get(const dt_map *m, const char *key, dt_value *out)
     struct dt_map_node *curr = m->buckets[b];
     while (curr != NULL) {
         if (strcmp(curr->key, key) == 0) {
-            *out = curr->value; /* Match found: write value to output parameter */
+            *out = curr->value; // Match found: write value to output parameter
             return DT_OK;
         }
         curr = curr->next;
@@ -249,7 +249,7 @@ dt_status dt_map_remove(dt_map *m, const char *key)
     if (*link == NULL) return DT_ERR_KEY;
 
     struct dt_map_node *target = *link;
-    *link = target->next; /* Bypass and unlink target node */
+    *link = target->next;   // Bypass and unlink target node
 
     /* Find target's index inside insertion order array */
     size_t i = 0;
