@@ -14,6 +14,9 @@ For the question "Is anything C allows worth wanting?", reading the same bytes a
 
 ## 3. Dropping the insertion order from `dt_map`
 
+Compared to `dt_map.c`, using an unordered hash map reduces memory overhead by eliminating the secondary ordering array, which costs O(n) extra memory. This secondary array increases memory consumption compared to a standard unordered hash map. Since key-value pairs in an unordered hash map are stored directly in hash buckets, and iteration scans linearly through the table slots. Removing the extra array per map saves memory and simplifies deletions, which no longer need to waste CPU time shifting elements or updating ordering links. A downside of this implementation is that dropping insertion order breaks iteration determinism. Traversing the map yields keys in an arbitrary sequence dictated by hash bucket indexes, which breaks order-dependent serialization. I would personally choose to ship with an unordered hash map mainly because of its ability to lookup in O(1) time. Eliminating the secondary array provides O(1) operations with a smaller memory footprint and cleaner deletions.
+
+
 
 
 ## 4. Access after release vs. a leak at the final check
