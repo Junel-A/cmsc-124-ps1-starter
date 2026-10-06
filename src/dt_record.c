@@ -30,22 +30,22 @@ struct dt_record {
 dt_record *dt_record_new(const char **field_names, size_t field_count)
 {
 
-    if (field_count > DT_RECORD_MAX_FIELDS) return NULL;  /* too many fields: capacity refusal */
+    if (field_count > DT_RECORD_MAX_FIELDS) return NULL;  // too many fields: capacity refusal
     if (field_count > 0 && field_names == NULL) return NULL;
     dt_record *r = malloc(sizeof *r);
     if (r == NULL) return NULL;
-    r->count = 0;   /* count only fully built fields so cleanup is safe */
+    r->count = 0;   // count only fully built fields so cleanup is safe
     for (size_t i = 0; i < field_count; i++) {
         size_t len = strlen(field_names[i]);
-        char *copy = malloc(len + 1);  /* own a copy of the name */
+        char *copy = malloc(len + 1);  // own a copy of the name 
         if (copy == NULL) {
-            dt_record_free(r); /* releases the names copied so far */
+            dt_record_free(r); // releases the names copied so far 
             return NULL;
         }
         memcpy(copy, field_names[i], len + 1);
         r->names[i] = copy;
-        r->values[i] = dt_value_nil();  /* every field starts as nil */
-        r->count++;  /* field i is now fully built */
+        r->values[i] = dt_value_nil();  // every field starts as nil
+        r->count++;  // field i is now fully built
     }
     return r;
 }
@@ -55,10 +55,10 @@ dt_record *dt_record_new(const char **field_names, size_t field_count)
  * It accepts NULL. The environment owns the field values.
  */
 void dt_record_free(dt_record *r)
-{          -> returns, having done nothing */
+{
 
     if (r == NULL) return;
-    for (size_t i = 0; i < r->count; i++) free(r->names[i]);  /* free the copied names, not the values */
+    for (size_t i = 0; i < r->count; i++) free(r->names[i]);  // free the copied names, not the values
     free(r);
 }
 
@@ -79,7 +79,7 @@ size_t dt_record_field_count(const dt_record *r)
 dt_status dt_record_field_name(const dt_record *r, size_t index, const char **out)
 {
 
-    if (index >= r->count) return DT_ERR_RANGE;  /* valid positions are 0..count-1 */
+    if (index >= r->count) return DT_ERR_RANGE;  // valid positions are 0..count-1
     *out = r->names[index];
     return DT_OK;
 }
@@ -93,7 +93,7 @@ dt_status dt_record_get(const dt_record *r, const char *field, dt_value *out)
 
     for (size_t i = 0; i < r->count; i++) {
         if (strcmp(r->names[i], field) == 0) {
-            *out = r->values[i];  /* same index as the matching name */
+            *out = r->values[i];  // same index as the matching name
             return DT_OK;
         }
     }
@@ -110,7 +110,7 @@ dt_status dt_record_set(dt_record *r, const char *field, dt_value v)
 
     for (size_t i = 0; i < r->count; i++) {
         if (strcmp(r->names[i], field) == 0) {
-            r->values[i] = v;  /* replace the value; schema never grows */
+            r->values[i] = v;  // replace the value; schema never grows
             return DT_OK;
         }
     }
