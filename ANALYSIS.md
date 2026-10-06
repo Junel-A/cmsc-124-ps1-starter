@@ -18,3 +18,7 @@ Compared to `dt_map.c`, using an unordered hash map reduces memory overhead by e
 
 
 ## 4. Access after release vs. a leak at the final check
+
+In the context of a long-running server, access after release (use-after-free) causes immediate, severe failure. Reading or writing to a released reference can corrupt live memory recycled by other objects. This can further lead to subtle data corruption, random crashes, or critical security vulnerabilities. 
+An unreleased allocation (memory leak) causes a slow progressive degradation of the server over time. Even though a leak doesn't corrupt any data, the accumulated requests will consume system RAM, greatly increasing the server's memory footprint. This will eventually lead to the RAM not being able to keep up and be exhausted which will result in service downtime in the worst scenario.
+On the other hand, for a short-lived CLI tool that exits in under a second, the impact shifts. Access after release remains dangerous because dereferencing stale memory can still return corrupted output before the program finishes. Memory leaks become harmless since when a process terminates, the OS kernel automatically reclaims all allocated heap memory, making manual cleanup right before exit unnecessary.
