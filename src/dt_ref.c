@@ -36,18 +36,18 @@ struct dt_ref {
 dt_ref *dt_ref_new(dt_value v)
 {
        
-    /* Allocate handle memory */
+    // Allocate handle memory
     dt_ref *p = malloc(sizeof *p);
     if (p == NULL) return NULL;
-    p->cell = malloc(sizeof *p->cell);  /* allocate memory for inner cell that the reference owns */
+    p->cell = malloc(sizeof *p->cell);  // allocate memory for inner cell that the reference owns 
 
-    /* cleanup if cell allocation failed */
+    // cleanup if cell allocation failed 
     if (p->cell == NULL) {
         free(p);
         return NULL;
     }
-    *p->cell = v;  /* copy the value into the cell */
-    p->released = false;  /* Mark reference as active */
+    *p->cell = v;  // copy the value into the cell 
+    p->released = false;  // Mark reference as active 
     return p;
 }
 
@@ -59,7 +59,7 @@ dt_ref *dt_ref_new(dt_value v)
 dt_status dt_ref_borrow(const dt_ref *p, dt_value *out)
 {
 
-    /* if reference already released, refuse access and return error */
+    // if reference already released, refuse access and return error
     if (p->released) return DT_ERR_RELEASED; 
     *out = *p->cell;
     return DT_OK;
@@ -72,10 +72,10 @@ dt_status dt_ref_borrow(const dt_ref *p, dt_value *out)
 dt_status dt_ref_release(dt_ref *p)
 {
 
-    if (p->released) return DT_ERR_RELEASED; /* Prevent double release */
+    if (p->released) return DT_ERR_RELEASED; // Prevent double release 
     free(p->cell);
-    p->cell = NULL;     /* Clear dangling pointer */
-    p->released = true;  /* Set the flag to true to block any future borrows or releases*/
+    p->cell = NULL;     // Clear dangling pointer 
+    p->released = true;  // Set the flag to true to block any future borrows or releases
     return DT_OK;
 }
 
@@ -97,7 +97,7 @@ bool dt_ref_is_released(const dt_ref *p)
 void dt_ref_destroy(dt_ref *p)
 {
 
-    if (p == NULL) return; /* if pointer is null; no actions and return */
-    free(p->cell); /* free inner cell; safe even if null */
+    if (p == NULL) return; // if pointer is null; no actions and return
+    free(p->cell); // free inner cell; safe even if null 
     free(p);
 }
