@@ -10,7 +10,7 @@ toolchains, and local verification details for the work that the manual defines.
 Replace the two entries below. An assigned trio adds one entry.
 
 - Junel Arellano (@Junel-A)
-- Full Name (@Dxdiag77)
+- Josef Placer (@Dxdiag77)
 
 ## Files You May Change
 
