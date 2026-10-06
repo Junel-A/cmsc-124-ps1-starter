@@ -27,11 +27,11 @@ struct dt_tuple {
 dt_tuple *dt_tuple_new(const dt_value *values, size_t count)
 {
 
-    if (count > DT_TUPLE_MAX_ARITY) return NULL;  /* return null when over the arity cap */
-    if (count > 0 && values == NULL) return NULL; /* return null when values poinster is null */
+    if (count > DT_TUPLE_MAX_ARITY) return NULL;  // return null when over the arity cap 
+    if (count > 0 && values == NULL) return NULL; // return null when values poinster is null 
     dt_tuple *t = malloc(sizeof *t);
     if (t == NULL) return NULL;
-    for (size_t i = 0; i < count; i++) t->values[i] = values[i];  /* copy the dt_value structs in order */
+    for (size_t i = 0; i < count; i++) t->values[i] = values[i];  // copy the dt_value structs in order 
     t->arity = count;
     return t;
 }
@@ -62,7 +62,7 @@ size_t dt_tuple_arity(const dt_tuple *t)
 dt_status dt_tuple_at(const dt_tuple *t, size_t index, dt_value *out)
 {
 
-    if (index >= t->arity) return DT_ERR_RANGE;  /* rejects every index of an empty tuple */
-    *out = t->values[index];    /* copy target value to caller variable */
+    if (index >= t->arity) return DT_ERR_RANGE;  // rejects every index of an empty tuple 
+    *out = t->values[index];    // copy target value to caller variable 
     return DT_OK;
 }
