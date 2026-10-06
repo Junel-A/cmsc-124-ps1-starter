@@ -33,10 +33,7 @@ struct dt_list {
  */
 dt_list *dt_list_nil(void)
 {
-    /* TODO: Return the empty list. Do not allocate memory.
-       dt_list_nil()             -> the empty list, which prints as ()
-       dt_list_len(dt_list_nil()) -> 0
-       cases/normal/list_basics.case */
+    /* An empty list is represented simply as a NULL pointer. */
     return NULL;
 }
 
@@ -47,16 +44,14 @@ dt_list *dt_list_nil(void)
  */
 dt_list *dt_list_cons(dt_value head, dt_list *tail)
 {
-    /* TODO: Allocate one cell that references the specified tail.
-       Preserve the tail.
-       Create e, c, b, and a in that order.
-       List a contains (1 2 3).
-       List b contains (2 3) and references the same cells for 2 and 3.
-       an allocation failure -> NULL
-       cases/normal/list_basics.case, cases/cleanup/shared_list_tail.case */
-    (void)head;
-    (void)tail;
-    return NULL;
+    /* Allocate one new list cell node */
+    dt_list *cell = malloc(sizeof(dt_list));
+    if (!cell) {
+        return NULL; // Allocation failure check
+    }
+    cell->head = head;
+    cell->tail = tail;
+    return cell;
 }
 
 /*
@@ -65,11 +60,11 @@ dt_list *dt_list_cons(dt_value head, dt_list *tail)
  */
 void dt_list_free(dt_list *l)
 {
-    /* TODO: Release this cell. Preserve its tail. Accept NULL.
-       freeing a's first cell  -> b still reaches the cells holding 2 and 3
-       releasing the tail here causes the sanitizer to report a double release
-       cases/cleanup/shared_list_tail.case */
-    (void)l;
+    /* Release only this single node to avoid breaking shared tails */
+    if (!l) {
+        return;
+    }
+    free(l);
 }
 
 /*
@@ -77,12 +72,13 @@ void dt_list_free(dt_list *l)
  */
 size_t dt_list_len(const dt_list *l)
 {
-    /* TODO: Visit each cell and count it.
-       for a = (1 2 3):  dt_list_len(a) -> 3
-       for the empty list: dt_list_len(NULL) -> 0
-       cases/normal/list_basics.case */
-    (void)l;
-    return 0;
+    size_t count = 0;
+    const dt_list *curr = l;
+    while (curr != NULL) {
+        count++;
+        curr = curr->tail;
+    }
+    return count;
 }
 
 /*
