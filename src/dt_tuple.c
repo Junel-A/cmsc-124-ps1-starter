@@ -26,13 +26,6 @@ struct dt_tuple {
  */
 dt_tuple *dt_tuple_new(const dt_value *values, size_t count)
 {
-    /* TODO: Return NULL when count exceeds DT_TUPLE_MAX_ARITY.
-       Otherwise, copy the values. Accept a zero count.
-       {1, "two"}  -> a tuple of arity 2 that prints as (1, "two")
-       count 0     -> a valid empty tuple that prints as ()
-       count 9     -> NULL, since DT_TUPLE_MAX_ARITY is 8
-       cases/normal/tuple_basics.case, cases/capacity/tuple_max_arity.case,
-       cases/capacity/tuple_over_arity.case */
 
     if (count > DT_TUPLE_MAX_ARITY) return NULL;  /* return null when over the arity cap */
     if (count > 0 && values == NULL) return NULL; /* return null when values poinster is null */
@@ -49,11 +42,7 @@ dt_tuple *dt_tuple_new(const dt_value *values, size_t count)
  */
 void dt_tuple_free(dt_tuple *t)
 {
-    /* TODO: Release the tuple. Preserve its values.
-       The environment owns those values. dt_array_free follows the same rule.
-       a tuple holding a string  -> the tuple goes, the string stays
-       dt_tuple_free(NULL)       -> returns, having done nothing */
-    
+
     free(t);
 }
 
@@ -62,12 +51,7 @@ void dt_tuple_free(dt_tuple *t)
  */
 size_t dt_tuple_arity(const dt_tuple *t)
 {
-    /* TODO: Return the count that the constructor stored.
-       The count does not change after construction.
-       after `tup new pair 1 "two"`:  dt_tuple_arity(pair) -> 2
-       after `tup new empty`:         dt_tuple_arity(empty) -> 0
-       cases/normal/tuple_basics.case */
-    
+
     return t->arity;
 }
 
@@ -77,12 +61,7 @@ size_t dt_tuple_arity(const dt_tuple *t)
  */
 dt_status dt_tuple_at(const dt_tuple *t, size_t index, dt_value *out)
 {
-    /* TODO: DT_ERR_RANGE at or past the arity. Positions start at 0.
-       for the tuple (1, "two"):
-         dt_tuple_at(t, 0, &out)  -> DT_OK, *out is the integer 1
-         dt_tuple_at(t, 2, &out)  -> DT_ERR_RANGE, *out untouched
-       cases/normal/tuple_basics.case, cases/boundary/tuple_index_past_arity.case */
-    
+
     if (index >= t->arity) return DT_ERR_RANGE;  /* rejects every index of an empty tuple */
     *out = t->values[index];    /* copy target value to caller variable */
     return DT_OK;
